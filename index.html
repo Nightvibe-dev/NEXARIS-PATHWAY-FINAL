@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NEXARIS PATHWAY</title>
+
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body>
+
+    <!-- PANTALLA DE REGISTRO -->
+
+    <section id="registro" class="registro">
+
+
+        <div class="registro-box">
+
+
+            <div class="logo-placeholder">
+                <img src="img/logo.png" alt="NEXARIS PATHWAY">
+            </div>
+
+
+            <h1>
+                NEXARIS PATHWAY
+            </h1>
+
+            <p id="fraseInicio">
+                Descubre el camino que mejor se adapta a tu talento.
+            </p>
+
+
+
+            <input id="nombreUsuario" placeholder="Ingresa tu nombre">
+
+
+            <input type="email" id="correoUsuario" placeholder="Ingresa tu correo">
+
+
+            <select id="gradoUsuario">
+
+
+                <option>
+                    Selecciona tu grado
+                </option>
+
+
+                <option>
+                    3° Secundaria
+                </option>
+
+
+                <option>
+                    4° Secundaria
+                </option>
+
+
+                <option>
+                    5° Secundaria
+                </option>
+
+
+            </select>
+
+
+
+
+            <button onclick="entrarNexaris()">
+
+                Comenzar 🚀
+
+            </button>
+
+            <div class="version">
+                NEXARIS PATHWAY v2.0
+            </div>
+
+
+
+
+        </div>
+
+
+    </section>
+
+    <div class="dashboard">
+
+
+        <!-- MENU LATERAL -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="logo-placeholder">
+                    <img src="img/logo.png" alt="NEXARIS PATHWAY">
+                </div>
+
+                <h2>NEXARIS</h2>
+                <p>PATHWAY</p>
+
+            </div>
+
+
+            <nav>
+
+                <button onclick="mostrar('inicio')">
+                    🏠 Inicio
+                </button>
+
+                <button onclick="mostrar('test')">
+                    🧠 Test Vocacional
+                </button>
+
+                <button onclick="mostrar('ia')">
+                    🤖 NEXARIS IA
+                </button>
+
+                <button onclick="mostrar('profesiones')">
+                    🎓 Explorar Carreras
+                </button>
+
+                <button onclick="mostrar('recursos')">
+                    📚 Recursos
+                </button>
+
+                <button onclick="mostrar('ruta')">
+                    🚀 Mi Ruta
+                </button>
+
+                <button onclick="mostrar('correo'); cargarCorreo()">
+                    📧 Mi Correo
+                </button>
+
+            </nav>
+
+            <div class="user-panel">
+
+                <div class="user-avatar">
+                    <img src="img/avatar.png" alt="">
+                </div>
+
+                <h3 id="nombreSidebar">
+                    Usuario
+                </h3>
+
+                <p class="estado">
+                    🟢 Explorando el futuro
+                </p>
+
+                <div class="xp-container">
+
+                    <span>Nivel 1 • Explorador</span>
+
+                    <div class="xp-bar">
+                        <div class="xp-fill"></div>
+                    </div>
+
+                    <small>20 / 100 XP</small>
+
+                </div>
+
+                <div class="stats-panel">
+
+                    <h3>📊 Actividad</h3>
+
+                    <div class="stat-item">
+
+                        <span>🧠 Test</span>
+
+                        <strong id="estadoTestPanel">
+                            Pendiente
+                        </strong>
+
+                    </div>
+
+                    <div class="stat-item">
+
+                        <span>🎓 Carreras</span>
+
+                        <strong id="contadorCarreras">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="stat-item">
+
+                        <span>🤖 IA</span>
+
+                        <strong id="contadorIA">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="stat-item">
+
+                        <span>⏱ Tiempo</span>
+
+                        <strong id="tiempoUso">
+                            0 min
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="future-box">
+
+                    ✨ Tu futuro comienza hoy
+
+                </div>
+
+            </div> <!-- Cierra user-panel -->
+
+
+        </aside>
+
+
+
+
+
+        <!-- CONTENIDO PRINCIPAL -->
+
+
+        <main class="main">
+
+            <header class="topbar">
+
+                <div class="top-left">
+                    🚀 <span>NEXARIS PATHWAY</span>
+                </div>
+
+                <div class="top-right">
+
+                    <div class="status">
+                        <span class="dot"></span>
+                        IA Activa
+                    </div>
+
+                    <div id="horaActual">00:00</div>
+
+                    <div id="usuarioTop">
+                        👤 Usuario
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <section id="inicio" class="panel">
+
+                <div class="hero">
+
+                    <div class="hero-left">
+
+                        <div class="hero-badge">
+                            🚀 Plataforma Inteligente de Orientación Vocacional
+                        </div>
+
+                        <h1>
+                            Descubre tu camino.
+                            <br>
+                            <span>Construye tu futuro.</span>
+                        </h1>
+
+                        <p>
+                            NEXARIS PATHWAY utiliza Inteligencia Artificial para ayudarte
+                            a descubrir tus fortalezas, explorar carreras profesionales y
+                            tomar mejores decisiones para tu futuro.
+                        </p>
+
+                        <div class="hero-buttons">
+
+                            <button class="primary" onclick="mostrar('test')">
+                                🚀 Comenzar Test
+                            </button>
+
+                            <button class="secondary" onclick="mostrar('ia')">
+                                🤖 Hablar con NEXARIS IA
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="hero-right">
+
+                        <img src="img/hero-nexaris.png" alt="NEXARIS">
+
+                    </div>
+
+                </div>
+
+
+                <div class="features">
+
+                    <div class="feature-card">
+                        <h2>🧠 Test Vocacional</h2>
+                        <p>
+                            Descubre tus intereses y habilidades mediante nuestro análisis inteligente.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h2>🤖 NEXARIS IA</h2>
+                        <p>
+                            Conversa con una IA entrenada para orientarte profesionalmente.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h2>🎓 Explora Carreras</h2>
+                        <p>
+                            Conoce información de distintas profesiones antes de decidir.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h2>📈 Tu Ruta</h2>
+                        <p>
+                            Visualiza tu progreso y construye tu plan profesional.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="smart-dashboard">
+
+                    <div class="dashboard-card">
+
+                        <h2>🎓 Recomendaciones IA</h2>
+
+                        <div class="career-list">
+
+                            <div class="career-item">
+                                💻 Ingeniería de Software
+                            </div>
+
+                            <div class="career-item">
+                                🔐 Ciberseguridad
+                            </div>
+
+                            <div class="career-item">
+                                🎨 Diseño UX/UI
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-card">
+
+                        <h2>🎯 Objetivos del día</h2>
+
+                        <ul class="goal-list">
+
+                            <li>☐ Completar el Test</li>
+
+                            <li>☐ Explorar una carrera</li>
+
+                            <li>☐ Hablar con NEXARIS IA</li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+
+            </section>
+
+
+
+
+
+
+
+            <!-- PROFESIONES -->
+
+
+            <section id="profesiones" class="panel oculto">
+
+
+                <h2>
+                    Explorador de Profesiones
+                </h2>
+
+
+                <select onchange="verProfesion(this.value)">
+
+                    <option value="">Selecciona una profesión</option>
+
+                    <option value="software">💻 Ingeniería de Software</option>
+                    <option value="ciberseguridad">🔐 Ciberseguridad</option>
+                    <option value="ia">🤖 Inteligencia Artificial</option>
+                    <option value="robotica">🤖 Robótica</option>
+                    <option value="diseno">🎨 Diseño Gráfico</option>
+                    <option value="uxui">🖌️ Diseño UX/UI</option>
+                    <option value="animacion">🎬 Animación Digital</option>
+                    <option value="marketing">📈 Marketing Digital</option>
+                    <option value="medicina">🩺 Medicina</option>
+                    <option value="enfermeria">💉 Enfermería</option>
+                    <option value="psicologia">🧠 Psicología</option>
+                    <option value="odontologia">🦷 Odontología</option>
+                    <option value="arquitectura">🏛️ Arquitectura</option>
+                    <option value="civil">🏗️ Ingeniería Civil</option>
+                    <option value="industrial">⚙️ Ingeniería Industrial</option>
+                    <option value="mecatronica">⚡ Mecatrónica</option>
+                    <option value="derecho">⚖️ Derecho</option>
+                    <option value="contabilidad">📊 Contabilidad</option>
+                    <option value="administracion">💼 Administración</option>
+                    <option value="educacion">📚 Educación</option>
+                    <option value="veterinaria">🐶 Medicina Veterinaria</option>
+
+
+                </select>
+
+
+                <div id="info">
+
+                </div>
+
+
+
+            </section>
+
+
+
+
+
+
+
+
+            <!-- NEXARIS IA -->
+
+
+            <section id="ia" class="panel oculto">
+
+
+                <div class="ai-title">
+
+                    <div class="ai-avatar">
+                        <img src="img/avatar.png" alt="NEXARIS IA">
+                    </div>
+
+                    <div>
+                        <h2>NEXARIS IA</h2>
+                        <p>🟢 Inteligencia artificial activa</p>
+                    </div>
+
+                </div>
+
+
+
+                <div id="chat-box" class="chat-box">
+
+
+                    <div class="message nexaris">
+
+                        🤖 Hola, soy NEXARIS.
+                        <br>
+                        Estoy aquí para ayudarte a descubrir tu camino profesional.
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="chat-input">
+
+
+                    <input id="pregunta" placeholder="Pregúntame sobre carreras, habilidades o futuro...">
+
+
+                    <button onclick="chat()">
+
+                        ➤
+
+                    </button>
+
+
+                </div>
+
+
+
+            </section>
+
+
+            <!-- MI RUTA -->
+
+            <section id="ruta" class="panel oculto">
+
+                <h2>
+                    🚀 Mi Ruta Profesional
+                </h2>
+
+                <p>
+                    Construye tu camino hacia el futuro con objetivos claros.
+                </p>
+
+
+                <div class="correo-box">
+
+                    <h3>
+                        🎯 Mi objetivo profesional
+                    </h3>
+
+                    <p>
+                        Define la profesión o área que quieres explorar.
+                    </p>
+
+
+                    <input id="objetivoProfesional" placeholder="Ejemplo: Ingeniería de Software">
+
+
+                    <h3>
+                        📚 Pasos para lograrlo
+                    </h3>
+
+                    <p>
+                        ✅ Investigar carreras relacionadas.
+                        <br>
+                        ✅ Desarrollar habilidades necesarias.
+                        <br>
+                        ✅ Practicar y aprender constantemente.
+                        <br>
+                        ✅ Prepararte para tu futuro profesional.
+                    </p>
+
+
+                    <h3>
+                        🌟 Habilidades a fortalecer
+                    </h3>
+
+                    <p>
+                        🧠 Pensamiento crítico
+                        <br>
+                        💻 Competencias digitales
+                        <br>
+                        🤝 Trabajo en equipo
+                        <br>
+                        🎨 Creatividad
+                    </p>
+
+
+                    <div class="mensaje-nexaris">
+
+                        🤖 NEXARIS:
+                        <br>
+                        Cada decisión que tomas hoy construye el profesional que serás mañana.
+
+                    </div>
+
+
+                </div>
+
+
+
+            </section>
+
+
+
+
+
+            <!-- RECURSOS -->
+
+
+            <section id="recursos" class="panel oculto">
+
+
+                <h2>
+                    📚 Recursos de Orientación
+                </h2>
+
+
+                <p>
+                    Herramientas para mejorar tus habilidades y prepararte para tu futuro profecional.
+                </p>
+
+
+
+
+                <div class="cards">
+
+
+
+
+                    <div class="card">
+
+
+                        <h3>
+                            📖 Investigación de carreras
+                        </h3>
+
+
+                        <p>
+                            Conoce diferentes profesiones y sus oportunidades.
+                        </p>
+
+
+                    </div>
+
+
+
+
+                    <div class="card">
+
+
+                        <h3>
+                            💡 Desarrollo de habilidades
+                        </h3>
+
+
+                        <p>
+                            Mejora creatividad, comunicación y liderazgo.
+                        </p>
+
+
+                    </div>
+
+
+
+
+                    <div class="card">
+
+
+                        <h3>
+                            🌐 Aprendizaje digital
+                        </h3>
+
+
+                        <p>
+                            Explora tecnología, programación e inteligencia artificial.
+                        </p>
+
+
+                    </div>
+
+
+
+
+                    <div class="card">
+
+
+                        <h3>
+                            📝 Consejos para estudiantes
+                        </h3>
+
+
+                        <p>
+                            Organiza tus metas y toma mejores decisiones.
+                        </p>
+
+
+                    </div>
+
+
+
+
+                </div>
+
+
+
+
+                <div class="mensaje-nexaris">
+
+
+                    🤖 NEXARIS:
+                    <br>
+                    Prepárate hoy para construir tu futuro profesional.
+
+
+                </div>
+
+
+
+
+            </section>
+
+
+            <!-- MI CORREO -->
+
+            <section id="correo" class="panel oculto">
+
+                <h2>
+                    📧 Mi Perfil NEXARIS
+                </h2>
+
+
+                <div class="correo-box">
+
+                    <h3>
+                        👤 Usuario
+                    </h3>
+
+                    <p id="mostrarUsuario">
+                        Cargando...
+                    </p>
+
+
+                    <h3>
+                        📩 Correo registrado
+                    </h3>
+
+                    <p id="mostrarCorreo">
+                        Cargando...
+                    </p>
+
+
+                    <div class="mensaje-nexaris">
+
+                        🤖 NEXARIS:
+                        <br>
+                        Tu información está guardada.
+                        Continúa explorando tus opciones profesionales.
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+
+
+    <script src="app.js"></script>
+
+
+</body>
+
+</html>
