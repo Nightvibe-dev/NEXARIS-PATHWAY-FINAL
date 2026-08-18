@@ -1,41 +1,131 @@
-alert("APP NUEVO");
+// ======================================================
+// NEXARIS PATHWAY v3.0
+// Sistema Principal
+// ======================================================
 
-// =====================================
-// NEXARIS PATHWAY
-// APP.JS
-// =====================================
+"use strict";
 
-// ===============================
-// NAVEGACIÓN
-// ===============================
+// ======================================================
+// CONFIGURACIÓN
+// ======================================================
 
-function mostrar(seccion) {
+const CONFIG = {
 
-    document.querySelectorAll(".panel").forEach(panel => {
-        panel.classList.add("oculto");
-    });
+    VERSION: "3.0",
 
-    const destino = document.getElementById(seccion);
+    API_URL: "http://localhost:3000/chat",
 
-    if (destino) {
-        destino.classList.remove("oculto");
+    STORAGE: "perfilNexaris"
+
+};
+
+// ======================================================
+// ESTADO GLOBAL
+// =====================================================
+
+const APP = {
+
+    perfil: null,
+
+    puntos: {
+        creativo: 0,
+        tecnologico: 0,
+        cientifico: 0,
+        social: 0
+    },
+
+    estadisticas: {
+        carrerasVisitadas: 0,
+        consultasIA: 0,
+        minutosUso: 0
+    }
+
+};
+
+// ======================================================
+// UTILIDADES
+// ======================================================
+
+function $(id) {
+
+    return document.getElementById(id);
+
+}
+
+function guardarPerfil() {
+
+    if (!APP.perfil) return;
+
+    APP.perfil.estadisticas = APP.estadisticas;
+
+    localStorage.setItem(
+        CONFIG.STORAGE,
+        JSON.stringify(APP.perfil)
+    );
+
+}
+
+function cargarPerfil() {
+
+    const datos = localStorage.getItem(CONFIG.STORAGE);
+
+    APP.perfil = datos ? JSON.parse(datos) : null;
+
+    if (APP.perfil) {
+
+        APP.estadisticas = APP.perfil.estadisticas || {
+            carrerasVisitadas: 0,
+            consultasIA: 0,
+            minutosUso: 0
+        };
+
     }
 
 }
 
+// ======================================================
+// NAVEGACIÓN
+// ======================================================
 
+function mostrar(seccion) {
 
-// ===============================
+    document
+
+        .querySelectorAll(".panel")
+
+        .forEach(panel => panel.classList.add("oculto"));
+
+    const destino = $(seccion);
+
+    if (destino) {
+
+        destino.classList.remove("oculto");
+
+    }
+
+}
+
+// ======================================================
 // REGISTRO
-// ===============================
+// ======================================================
 
 function entrarNexaris() {
 
-    const nombre = document.getElementById("nombreUsuario").value.trim();
+    const nombre = $("nombreUsuario").value.trim();
 
-    const correo = document.getElementById("correoUsuario").value.trim();
+    const correo = $("correoUsuario").value.trim();
 
-    if (nombre === "" || correo === "") {
+    const grado = $("gradoUsuario").value;
+
+    if (
+
+        !nombre ||
+
+        !correo ||
+
+        grado === "Selecciona tu grado"
+
+    ) {
 
         alert("Completa todos los campos.");
 
@@ -43,610 +133,1944 @@ function entrarNexaris() {
 
     }
 
-    localStorage.setItem("usuario", nombre);
+    APP.perfil = {
 
-    localStorage.setItem("correo", correo);
+        nombre,
+        correo,
+        grado,
 
-    document.getElementById("registro").style.display = "none";
+        fechaRegistro: new Date().toLocaleDateString("es-PE"),
+
+        version: CONFIG.VERSION,
+
+        nivel: 1,
+
+        xp: 0,
+
+        carrerasFavoritas: [],
+
+        testCompletado: false,
+
+        estadisticas: {
+            carrerasVisitadas: 0,
+            consultasIA: 0,
+            minutosUso: 0
+        }
+
+    };
+
+    guardarPerfil();
+
+    iniciarDashboard();
+
+    agregarXP(10);
+
+}
+
+
+// ======================================================
+// PERFIL
+// ======================================================
+function actualizarPerfil() {
+
+    if (!APP.perfil) return;
+
+    if ($("mostrarUsuario"))
+
+        $("mostrarUsuario").textContent = APP.perfil.nombre;
+
+    if ($("mostrarCorreo"))
+
+        $("mostrarCorreo").textContent = APP.perfil.correo;
+
+    if ($("usuarioTop"))
+
+        $("usuarioTop").textContent = "👤 " + APP.perfil.nombre;
+
+    if ($("nombreSidebar"))
+
+        $("nombreSidebar").textContent = APP.perfil.nombre;
+
+}
+
+// ======================================================
+// SALUDO
+// ======================================================
+
+function saludo() {
+
+    if (!APP.perfil) return;
+
+    const frase = $("fraseInicio");
+
+    if (frase) {
+
+        const hora = new Date().getHours();
+
+        let mensaje = "";
+
+        if (hora < 12) {
+
+            mensaje = "☀️ Buenos días";
+
+        } else if (hora < 18) {
+
+            mensaje = "🌤 Buenas tardes";
+
+        } else {
+
+            mensaje = "🌙 Buenas noches";
+
+        }
+
+        frase.textContent =
+            `${mensaje}, ${APP.perfil.nombre}. ¡Listo para descubrir tu futuro?`;
+
+    }
+
+}
+
+// ======================================================
+// DASHBOARD
+// ======================================================
+
+function iniciarDashboard() {
+
+    $("registro").style.display = "none";
 
     document.querySelector(".dashboard").style.display = "grid";
 
+    actualizarPerfil();
+
+    saludo();
+
+    actualizarDashboard();
+
+    actualizarXP();
+
     mostrar("inicio");
 
-    const fecha = new Date();
+}
 
-    const opciones = {
+// ======================================================
+// ESTADÍSTICAS
+// ======================================================
 
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
+function sumarCarrera() {
 
-    };
+    APP.estadisticas.carrerasVisitadas++;
 
-    document.getElementById("fechaHoy").textContent =
-        fecha.toLocaleDateString("es-ES", opciones);
+    guardarPerfil();
 
-    cargarCorreo();
+    actualizarDashboard();
+
+}
+
+function sumarConsultaIA() {
+
+    APP.estadisticas.consultasIA++;
+
+    guardarPerfil();
+
+    actualizarDashboard();
+
+}
+
+// ======================================================
+// ACTUALIZAR ESTADÍSTICAS
+// ======================================================
+
+function actualizarDashboard() {
+
+    if (!APP.perfil) return;
+
+    if ($("contadorCarreras")) {
+        $("contadorCarreras").textContent = APP.estadisticas.carrerasVisitadas;
+    }
+
+    if ($("contadorIA")) {
+        $("contadorIA").textContent = APP.estadisticas.consultasIA;
+    }
+
+    if ($("tiempoUso")) {
+        $("tiempoUso").textContent = APP.estadisticas.minutosUso + " min";
+    }
+
+    if ($("estadoTestPanel")) {
+        $("estadoTestPanel").textContent =
+            APP.perfil.testCompletado ? "Completado ✅" : "Pendiente";
+    }
+
+    if ($("nivelUsuario")) {
+        $("nivelUsuario").textContent = APP.perfil.nivel;
+    }
+
+    if ($("xpUsuario")) {
+        $("xpUsuario").textContent = APP.perfil.xp + " / 100 XP";
+    }
+
+}
+
+// ======================================================
+// SISTEMA XP
+// ======================================================
+
+function agregarXP(cantidad) {
+
+    if (!APP.perfil) return;
+
+    APP.perfil.xp += cantidad;
+
+    while (APP.perfil.xp >= 100) {
+
+        APP.perfil.xp -= 100;
+        APP.perfil.nivel++;
+
+    }
+
+    guardarPerfil();
+
+    actualizarXP();
+
+}
+
+function actualizarXP() {
+
+    if (!APP.perfil) return;
+
+    if ($("nivelUsuario")) {
+
+        $("nivelUsuario").textContent = APP.perfil.nivel;
+
+    }
+
+    if ($("xpUsuario")) {
+
+        $("xpUsuario").textContent =
+            APP.perfil.xp + " / 100 XP";
+
+    }
+
+    const barra = document.querySelector(".xp-fill");
+
+    if (barra) {
+
+        barra.style.width = APP.perfil.xp + "%";
+
+    }
+
+}
+
+// ======================================================
+// TEST VOCACIONAL NEXARIS
+// ======================================================
+
+const TEST_VOCACIONAL = [
+
+    {
+        pregunta: "¿Qué actividad te resulta más interesante?",
+
+        opciones: [
+            {
+                texto: "Crear aplicaciones, páginas web o sistemas",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Diseñar dibujos, imágenes o contenido visual",
+                perfil: "creativo"
+            },
+            {
+                texto: "Investigar cómo funcionan las cosas",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Ayudar, orientar o trabajar con personas",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "Cuando tienes un problema difícil, ¿qué haces primero?",
+
+        opciones: [
+            {
+                texto: "Busco una solución lógica y estructurada",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Pienso en una solución diferente o creativa",
+                perfil: "creativo"
+            },
+            {
+                texto: "Investigo información antes de decidir",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Pregunto a otras personas y considero sus opiniones",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué proyecto preferirías realizar?",
+
+        opciones: [
+            {
+                texto: "Crear un videojuego o aplicación",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Diseñar una campaña visual",
+                perfil: "creativo"
+            },
+            {
+                texto: "Realizar un experimento científico",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Crear una campaña para ayudar a la comunidad",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué asignatura suele llamarte más la atención?",
+
+        opciones: [
+            {
+                texto: "Computación o tecnología",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Arte o comunicación",
+                perfil: "creativo"
+            },
+            {
+                texto: "Ciencia o matemática",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Ciencias sociales o comunicación",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué habilidad te gustaría desarrollar?",
+
+        opciones: [
+            {
+                texto: "Programación y tecnología",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Diseño e imaginación",
+                perfil: "creativo"
+            },
+            {
+                texto: "Investigación y análisis",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Comunicación y liderazgo",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Cómo prefieres trabajar?",
+
+        opciones: [
+            {
+                texto: "Construyendo soluciones con tecnología",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Creando y diseñando",
+                perfil: "creativo"
+            },
+            {
+                texto: "Analizando información y datos",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Colaborando y ayudando a otros",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué problema de tu comunidad te gustaría ayudar a resolver?",
+
+        opciones: [
+            {
+                texto: "Problemas relacionados con tecnología",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Problemas de comunicación y expresión",
+                perfil: "creativo"
+            },
+            {
+                texto: "Problemas relacionados con ciencia o ambiente",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Problemas sociales o educativos",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué tipo de resultado te produciría más satisfacción?",
+
+        opciones: [
+            {
+                texto: "Ver funcionando algo que programé",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Ver una creación visual terminada",
+                perfil: "creativo"
+            },
+            {
+                texto: "Descubrir o demostrar algo",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Saber que ayudé a alguien",
+                perfil: "social"
+            }
+        ]
+    }
+
+];
+
+let preguntaActual = 0;
+
+
+// ======================================================
+// INICIAR TEST
+// ======================================================
+
+function iniciarTest() {
+
+    reiniciarTest();
+
+    preguntaActual = 0;
+
+    mostrarPregunta();
 
 }
 
 
-
-// ===============================
-// PERFIL
-// ===============================
-
-function cargarCorreo() {
-
-    const usuario = localStorage.getItem("usuario") || "No registrado";
-
-    const correo = localStorage.getItem("correo") || "No registrado";
-
-    const nombre = document.getElementById("mostrarUsuario");
-
-    const email = document.getElementById("mostrarCorreo");
-
-    if (nombre) {
-
-        nombre.textContent = usuario;
-
-    }
-
-    if (email) {
-
-        email.textContent = correo;
-
-    }
-
-    const usuarioTop = document.getElementById("usuarioTop");
-
-    if (usuarioTop) {
-
-        usuarioTop.textContent = "👤 " + usuario;
-
-    }
-
-}
-
-
-
-// ===============================
-// TEST VOCACIONAL
-// ===============================
-
-let carrerasVisitadas = 0;
-let consultasIA = 0;
-let minutosUso = 0;
-
-let puntos = {
-
-    creativo: 0,
-
-    tecnologico: 0,
-
-    cientifico: 0,
-
-    social: 0
-
-};
-
-
+// ======================================================
+// REINICIAR TEST
+// ======================================================
 
 function reiniciarTest() {
 
-    puntos.creativo = 0;
+    APP.puntos = {
 
-    puntos.tecnologico = 0;
+        creativo: 0,
+        tecnologico: 0,
+        cientifico: 0,
+        social: 0
 
-    puntos.cientifico = 0;
+    };
 
-    puntos.social = 0;
+    const resultado = $("resultado");
 
-    document.getElementById("resultado").innerHTML = "";
+    if (resultado) {
 
-}
-
-
-
-function sumarPerfil(tipo) {
-
-    if (puntos[tipo] !== undefined) {
-
-        puntos[tipo]++;
+        resultado.innerHTML = "";
 
     }
 
 }
 
 
+// ======================================================
+// MOSTRAR PREGUNTA
+// ======================================================
 
-function mostrarResultado() {
+function mostrarPregunta() {
 
-    const resultado = document.getElementById("resultado");
+    const resultado = $("resultado");
 
-    const mayor = Math.max(
+    if (!resultado) return;
 
-        puntos.creativo,
 
-        puntos.tecnologico,
+    if (preguntaActual >= TEST_VOCACIONAL.length) {
 
-        puntos.cientifico,
-
-        puntos.social
-
-    );
-
-    if (mayor === 0) {
-
-        resultado.innerHTML = `
-        <h3>⚠️ Aún no respondes el test</h3>
-        <p>Selecciona las opciones para descubrir tu perfil.</p>
-        `;
-
-        document.getElementById("estadoTestPanel").textContent = "Completado ✅";
-
-        document.getElementById("progresoTexto").textContent = "25%";
+        finalizarTest();
 
         return;
 
     }
 
-    if (mayor === puntos.creativo) {
 
-        resultado.innerHTML = `
+    const pregunta = TEST_VOCACIONAL[preguntaActual];
 
-        <h2>🎨 Perfil Creativo</h2>
-
-        <p>
-        Destacas por tu imaginación, innovación y capacidad para diseñar.
-        </p>
-
-        <b>Carreras recomendadas:</b>
-
-        <br>🎨 Diseño Gráfico
-        <br>🏛️ Arquitectura
-        <br>🎬 Animación Digital
-        <br>🎮 Desarrollo de Videojuegos
-
-        `;
-        document.getElementById("estadoTestPanel").textContent = "Completado ✅";
-
-        document.getElementById("progresoTexto").textContent = "25%";
-
-        return;
-
-    }
-
-    if (mayor === puntos.tecnologico) {
-
-        resultado.innerHTML = `
-
-        <h2>💻 Perfil Tecnológico</h2>
-
-        <p>
-        Tienes facilidad para resolver problemas mediante la tecnología.
-        </p>
-
-        <b>Carreras recomendadas:</b>
-
-        <br>💻 Ingeniería de Software
-        <br>🤖 Inteligencia Artificial
-        <br>🔐 Ciberseguridad
-        <br>⚙️ Robótica
-
-        `;
-
-        document.getElementById("estadoTestPanel").textContent = "Completado ✅";
-
-        document.getElementById("progresoTexto").textContent = "25%";
-
-        return;
-
-    }
-
-    if (mayor === puntos.cientifico) {
-
-        resultado.innerHTML = `
-
-        <h2>🔬 Perfil Científico</h2>
-
-        <p>
-        Disfrutas investigar y comprender cómo funciona el mundo.
-        </p>
-
-        <b>Carreras recomendadas:</b>
-
-        <br>🩺 Medicina
-        <br>🧬 Biología
-        <br>🔭 Investigación
-        <br>🌱 Ciencias Ambientales
-
-        `;
-        document.getElementById("estadoTestPanel").textContent = "Completado ✅";
-
-        document.getElementById("progresoTexto").textContent = "25%";
-
-        return;
-
-    }
 
     resultado.innerHTML = `
 
-    <h2>🤝 Perfil Social</h2>
+        <div class="test-question">
 
-    <p>
-    Tu fortaleza es comprender, orientar y ayudar a otras personas.
-    </p>
+            <h2>
+                Pregunta ${preguntaActual + 1}
+                de ${TEST_VOCACIONAL.length}
+            </h2>
 
-    <b>Carreras recomendadas:</b>
+            <h3>
+                ${pregunta.pregunta}
+            </h3>
 
-    <br>🧠 Psicología
-    <br>📚 Educación
-    <br>⚖️ Derecho
-    <br>🌎 Trabajo Social
+            <div class="test-options">
+
+                ${pregunta.opciones.map((opcion, indice) => `
+
+                    <button
+                        onclick="responderTest('${opcion.perfil}')"
+                    >
+                        ${indice + 1}. ${opcion.texto}
+                    </button>
+
+                `).join("")}
+
+            </div>
+
+        </div>
 
     `;
 
 }
 
-// ===============================
-// EXPLORADOR DE CARRERAS
-// ===============================
 
-function verProfesion(profesion) {
+// ======================================================
+// RESPONDER TEST
+// ======================================================
 
-    const info = document.getElementById("info");
+function responderTest(perfil) {
 
-    if (!info) return;
+    if (APP.puntos[perfil] === undefined) return;
 
-    const carreras = {
 
-        software: {
-            titulo: "💻 Ingeniería de Software",
-            descripcion: "Desarrolla aplicaciones, sitios web, videojuegos y sistemas inteligentes.",
-            habilidades: "Programación, lógica, creatividad y trabajo en equipo.",
-            campo: "Empresas tecnológicas, startups, videojuegos, IA y desarrollo web."
-        },
+    APP.puntos[perfil]++;
 
-        medicina: {
-            titulo: "🩺 Medicina",
-            descripcion: "Prevención, diagnóstico y tratamiento de enfermedades.",
-            habilidades: "Empatía, responsabilidad, comunicación y ciencias.",
-            campo: "Hospitales, clínicas e investigación."
-        },
 
-        diseno: {
-            titulo: "🎨 Diseño Gráfico",
-            descripcion: "Comunica ideas mediante imágenes, ilustraciones y contenido visual.",
-            habilidades: "Creatividad, dibujo y manejo de software de diseño.",
-            campo: "Publicidad, marketing, redes sociales y empresas."
-        },
+    preguntaActual++;
 
-        psicologia: {
-            titulo: "🧠 Psicología",
-            descripcion: "Estudia el comportamiento humano y la salud mental.",
-            habilidades: "Empatía, escucha y análisis.",
-            campo: "Colegios, hospitales y empresas."
-        },
 
-        arquitectura: {
-            titulo: "🏛️ Arquitectura",
-            descripcion: "Diseña edificios y espacios funcionales.",
-            habilidades: "Creatividad, matemáticas y dibujo técnico.",
-            campo: "Constructoras y estudios de arquitectura."
-        },
+    agregarXP(3);
 
-        derecho: {
-            titulo: "⚖️ Derecho",
-            descripcion: "Protege la justicia y aplica las leyes.",
-            habilidades: "Comunicación, ética y argumentación.",
-            campo: "Estudios jurídicos y entidades públicas."
-        },
 
-        robotica: {
-            titulo: "🤖 Robótica e IA",
-            descripcion: "Diseña robots y sistemas inteligentes.",
-            habilidades: "Programación, electrónica y matemáticas.",
-            campo: "Industria, automatización e investigación."
-        }
+    mostrarPregunta();
 
-        ,
+}
 
-        ciberseguridad: {
-            titulo: "🔐 Ciberseguridad",
-            descripcion: "Protege sistemas y datos frente a ataques informáticos.",
-            habilidades: "Programación, análisis y seguridad.",
-            campo: "Empresas tecnológicas, bancos y gobierno."
-        },
 
-        ia: {
-            titulo: "🤖 Inteligencia Artificial",
-            descripcion: "Desarrolla sistemas capaces de aprender y tomar decisiones.",
-            habilidades: "Matemáticas, programación y lógica.",
-            campo: "Tecnología, investigación y automatización."
-        },
+// ======================================================
+// FINALIZAR TEST
+// ======================================================
 
-        uxui: {
-            titulo: "🖌️ Diseño UX/UI",
-            descripcion: "Diseña interfaces fáciles y atractivas para los usuarios.",
-            habilidades: "Creatividad, diseño y comunicación.",
-            campo: "Empresas de software y diseño digital."
-        },
+function finalizarTest() {
 
-        animacion: {
-            titulo: "🎬 Animación Digital",
-            descripcion: "Crea películas, videojuegos y contenido audiovisual.",
-            habilidades: "Dibujo, creatividad y software de animación.",
-            campo: "Estudios de animación y videojuegos."
-        },
+    if (!APP.perfil) return;
 
-        marketing: {
-            titulo: "📈 Marketing Digital",
-            descripcion: "Promociona productos y marcas usando Internet.",
-            habilidades: "Creatividad, comunicación y análisis.",
-            campo: "Empresas y agencias."
-        },
 
-        enfermeria: {
-            titulo: "💉 Enfermería",
-            descripcion: "Brinda atención y cuidado a los pacientes.",
-            habilidades: "Empatía y responsabilidad.",
-            campo: "Hospitales y clínicas."
-        },
+    APP.perfil.testCompletado = true;
 
-        odontologia: {
-            titulo: "🦷 Odontología",
-            descripcion: "Previene y trata enfermedades bucales.",
-            habilidades: "Precisión y atención al detalle.",
-            campo: "Consultorios y hospitales."
-        },
 
-        civil: {
-            titulo: "🏗️ Ingeniería Civil",
-            descripcion: "Diseña y construye obras de infraestructura.",
-            habilidades: "Matemáticas y planificación.",
-            campo: "Constructoras y proyectos públicos."
-        },
+    const resultados = calcularPerfil();
 
-        industrial: {
-            titulo: "⚙️ Ingeniería Industrial",
-            descripcion: "Optimiza procesos en empresas.",
-            habilidades: "Gestión y análisis.",
-            campo: "Industria y fábricas."
-        },
 
-        mecatronica: {
-            titulo: "⚡ Mecatrónica",
-            descripcion: "Integra mecánica, electrónica y programación.",
-            habilidades: "Robótica y tecnología.",
-            campo: "Automatización industrial."
-        },
+    APP.perfil.perfilVocacional = resultados;
 
-        contabilidad: {
-            titulo: "📊 Contabilidad",
-            descripcion: "Administra la información financiera.",
-            habilidades: "Matemáticas y organización.",
-            campo: "Empresas y bancos."
-        },
 
-        administracion: {
-            titulo: "💼 Administración",
-            descripcion: "Gestiona empresas y organizaciones.",
-            habilidades: "Liderazgo y planificación.",
-            campo: "Empresas públicas y privadas."
-        },
+    guardarPerfil();
 
-        educacion: {
-            titulo: "📚 Educación",
-            descripcion: "Forma y guía el aprendizaje de estudiantes.",
-            habilidades: "Comunicación y paciencia.",
-            campo: "Instituciones educativas."
-        },
 
-        veterinaria: {
-            titulo: "🐶 Medicina Veterinaria",
-            descripcion: "Cuida la salud de los animales.",
-            habilidades: "Biología y empatía.",
-            campo: "Clínicas veterinarias y zoológicos."
-        }
+    actualizarDashboard();
+
+
+    mostrarResultado(resultados);
+
+}
+
+
+// ======================================================
+// CALCULAR PERFIL
+// ======================================================
+
+function calcularPerfil() {
+
+    const puntos = APP.puntos;
+
+
+    const total =
+
+        puntos.creativo +
+
+        puntos.tecnologico +
+
+        puntos.cientifico +
+
+        puntos.social;
+
+
+    const porcentaje = {
+
+
+        creativo: total
+            ? Math.round((puntos.creativo / total) * 100)
+            : 0,
+
+
+        tecnologico: total
+            ? Math.round((puntos.tecnologico / total) * 100)
+            : 0,
+
+
+        cientifico: total
+            ? Math.round((puntos.cientifico / total) * 100)
+            : 0,
+
+
+        social: total
+            ? Math.round((puntos.social / total) * 100)
+            : 0
+
     };
 
-    if (!carreras[profesion]) {
 
-        info.innerHTML = "";
+    const perfiles = [
 
+        {
+            id: "tecnologico",
+            nombre: "Tecnológico",
+            icono: "💻",
+            puntos: puntos.tecnologico
+        },
+
+        {
+            id: "creativo",
+            nombre: "Creativo",
+            icono: "🎨",
+            puntos: puntos.creativo
+        },
+
+        {
+            id: "cientifico",
+            nombre: "Científico",
+            icono: "🔬",
+            puntos: puntos.cientifico
+        },
+
+        {
+            id: "social",
+            nombre: "Social",
+            icono: "🤝",
+            puntos: puntos.social
+        }
+
+    ];
+
+
+    perfiles.sort((a, b) => b.puntos - a.puntos);
+
+
+    return {
+
+        dominante: perfiles[0],
+
+        segundo: perfiles[1],
+
+        porcentajes: porcentaje,
+
+        puntos: { ...puntos }
+
+    };
+
+}
+
+
+// ======================================================
+// MOSTRAR RESULTADO
+// ======================================================
+
+function mostrarResultado(perfil) {
+
+    const resultado = $("resultado");
+
+    if (!resultado) return;
+
+    const carreras = obtenerCarrerasRecomendadas(perfil);
+
+    resultado.innerHTML = `
+
+        <div class="test-result">
+
+            <h2>
+                🎯 Tu perfil vocacional
+            </h2>
+
+            <h1>
+                ${perfil.dominante.icono}
+                ${perfil.dominante.nombre}
+            </h1>
+
+            <div class="perfil-barras">
+
+                <p>
+                    💻 Tecnológico:
+                    <strong>
+                        ${perfil.porcentajes.tecnologico}%
+                    </strong>
+                </p>
+
+                <p>
+                    🎨 Creativo:
+                    <strong>
+                        ${perfil.porcentajes.creativo}%
+                    </strong>
+                </p>
+
+                <p>
+                    🔬 Científico:
+                    <strong>
+                        ${perfil.porcentajes.cientifico}%
+                    </strong>
+                </p>
+
+                <p>
+                    🤝 Social:
+                    <strong>
+                        ${perfil.porcentajes.social}%
+                    </strong>
+                </p>
+
+            </div>
+
+            <h3>
+                🎓 Carreras compatibles
+            </h3>
+
+            <div class="recommended-careers">
+
+                ${carreras.map(carrera => `
+
+                    <button
+                        onclick="verProfesion('${carrera.id}')"
+                    >
+                        ${carrera.icono}
+                        ${carrera.nombre}
+                    </button>
+
+                `).join("")}
+
+            </div>
+
+            <button
+                class="primary"
+                onclick="iniciarTest()"
+            >
+                🔄 Repetir test
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+// ======================================================
+// VER PROFESIÓN
+// ======================================================
+
+function verProfesion(id) {
+
+    let carreraEncontrada = null;
+
+    for (const categoria of CARRERAS) {
+
+        const carrera = categoria.carreras.find(
+            c => c.id === id
+        );
+
+        if (carrera) {
+
+            carreraEncontrada = carrera;
+            break;
+
+        }
+
+    }
+
+    if (!carreraEncontrada) {
+
+        console.error("Carrera no encontrada:", id);
         return;
 
     }
 
-    const carrera = carreras[profesion];
+    APP.estadisticas.carrerasVisitadas++;
 
-    info.innerHTML = `
+    agregarXP(5);
 
-        <h2>${carrera.titulo}</h2>
+    guardarPerfil();
 
-        <p>${carrera.descripcion}</p>
+    const resultado = $("resultado");
 
-        <h3>🧠 Habilidades</h3>
+    if (!resultado) return;
 
-        <p>${carrera.habilidades}</p>
+    resultado.innerHTML = `
 
-        <h3>💼 Campo laboral</h3>
+        <div class="career-detail">
 
-        <p>${carrera.campo}</p>
+            <h2>
+                ${carreraEncontrada.icono}
+                ${carreraEncontrada.nombre}
+            </h2>
+
+            <p>
+                ${carreraEncontrada.descripcion}
+            </p>
+
+            <h3>🌐 Ramas profesionales</h3>
+
+            <ul>
+                ${carreraEncontrada.ramas
+            .map(rama => `<li>${rama}</li>`)
+            .join("")}
+            </ul>
+
+            <h3>🧠 Habilidades</h3>
+
+            <ul>
+                ${carreraEncontrada.habilidades
+            .map(habilidad => `<li>${habilidad}</li>`)
+            .join("")}
+            </ul>
+
+            <h3>🎓 Universidades</h3>
+
+            <ul>
+                ${carreraEncontrada.universidades
+            .map(u => `<li>${u}</li>`)
+            .join("")}
+            </ul>
+
+            <h3>📚 Cursos recomendados</h3>
+
+            <ul>
+                ${carreraEncontrada.cursos
+            .map(curso => `<li>${curso}</li>`)
+            .join("")}
+            </ul>
+
+            <h3>🚀 Ideas de proyectos</h3>
+
+            <ul>
+                ${carreraEncontrada.proyectos
+            .map(proyecto => `<li>${proyecto}</li>`)
+            .join("")}
+            </ul>
+
+            <p>
+                💰 Salario referencial:
+                <strong>
+                    ${carreraEncontrada.salario}
+                </strong>
+            </p>
+
+            <button
+                class="primary"
+                onclick="mostrarResultado(APP.perfil.perfilVocacional)"
+            >
+                ← Volver a resultados
+            </button>
+
+        </div>
 
     `;
 
-}
-
-
-
-// ===============================
-// RECURSOS
-// ===============================
-
-function abrirRecurso(url) {
-
-    window.open(url, "_blank");
+    actualizarDashboard();
 
 }
 
 
+// ======================================================
+// RECOMENDADOR DE CARRERAS
+// ======================================================
 
-// ===============================
-// MI RUTA
-// ===============================
+function obtenerCarrerasRecomendadas(perfil) {
 
-function generarRuta() {
+    const dominante = perfil.dominante.id;
 
-    const ruta = document.getElementById("rutaResultado");
 
-    if (!ruta) return;
+    const mapa = {
 
-    ruta.innerHTML = `
+        tecnologico: [
+            "software",
+            "ciberseguridad",
+            "inteligencia-artificial",
+            "robotica",
+            "mecatronica"
+        ],
 
-    <h2>🚀 Tu Ruta Profesional</h2>
+        creativo: [
+            "diseno-grafico",
+            "uxui",
+            "animacion"
+        ],
 
-    <p>
-    Completa el test vocacional, conversa con NEXARIS IA y explora distintas carreras para descubrir cuál se adapta mejor a ti.
-    </p>
+        cientifico: [
+            "inteligencia-artificial",
+            "medicina",
+            "enfermeria",
+            "civil",
+            "mecatronica"
+        ],
 
-    <ol>
+        social: [
+            "psicologia",
+            "derecho",
+            "administracion",
+            "enfermeria",
+            "contabilidad"
+        ]
 
-        <li>✅ Realiza el Test Vocacional.</li>
+    };
 
-        <li>✅ Habla con NEXARIS IA.</li>
 
-        <li>✅ Explora diferentes profesiones.</li>
+    const ids = mapa[dominante] || [];
 
-        <li>✅ Investiga universidades e institutos.</li>
 
-        <li>🎯 Define una meta profesional.</li>
+    const recomendadas = [];
 
-    </ol>
 
-    `;
+    for (const categoria of CARRERAS) {
+
+        for (const carrera of categoria.carreras) {
+
+            if (ids.includes(carrera.id)) {
+
+                recomendadas.push(carrera);
+
+            }
+
+        }
+
+    }
+
+
+    return recomendadas;
 
 }
 
-// ===============================
-// NEXARIS IA (GEMINI)
-// ===============================
+// ======================================================
+// BIBLIOTECA DE CARRERAS
+// NEXARIS PATHWAY v3.0
+// ======================================================
+
+const CARRERAS = [
+
+    // ==================================================
+    // TECNOLOGÍA
+    // ==================================================
+
+    {
+        categoria: "Tecnología",
+
+        carreras: [
+
+            {
+                id: "software",
+                nombre: "Ingeniería de Software",
+                icono: "💻",
+
+                descripcion:
+                    "Diseña, desarrolla y mantiene aplicaciones, plataformas, videojuegos y sistemas informáticos.",
+
+                ramas: [
+                    "Frontend",
+                    "Backend",
+                    "Full Stack",
+                    "Desarrollo móvil",
+                    "Videojuegos",
+                    "DevOps",
+                    "Cloud Computing",
+                    "QA y Testing"
+                ],
+
+                habilidades: [
+                    "Lógica",
+                    "Programación",
+                    "Resolución de problemas",
+                    "Trabajo en equipo",
+                    "Pensamiento estructurado"
+                ],
+
+                universidades: [
+                    "UNI",
+                    "PUCP",
+                    "UTEC",
+                    "UPC"
+                ],
+
+                cursos: [
+                    "HTML y CSS",
+                    "JavaScript",
+                    "Python",
+                    "Git y GitHub",
+                    "Node.js"
+                ],
+
+                proyectos: [
+                    "Crear una página web",
+                    "Crear una aplicación",
+                    "Crear un videojuego",
+                    "Crear un bot"
+                ],
+
+                salario: "S/ 3,500 - S/ 9,000"
+            },
+
+
+            {
+                id: "ciberseguridad",
+                nombre: "Ciberseguridad",
+                icono: "🔐",
+
+                descripcion:
+                    "Protege sistemas, redes, aplicaciones y datos frente a amenazas y ataques informáticos.",
+
+                ramas: [
+                    "Ethical Hacking",
+                    "Pentesting",
+                    "Seguridad Web",
+                    "Seguridad de Redes",
+                    "Forense Digital",
+                    "SOC Analyst",
+                    "Seguridad Cloud"
+                ],
+
+                habilidades: [
+                    "Pensamiento analítico",
+                    "Redes",
+                    "Linux",
+                    "Resolución de problemas",
+                    "Ética profesional"
+                ],
+
+                universidades: [
+                    "UNI",
+                    "UTEC",
+                    "UPC"
+                ],
+
+                cursos: [
+                    "Redes",
+                    "Linux",
+                    "Seguridad informática",
+                    "Ethical Hacking"
+                ],
+
+                proyectos: [
+                    "Crear un laboratorio de seguridad",
+                    "Analizar una red",
+                    "Crear un sistema de protección",
+                    "Realizar una auditoría"
+                ],
+
+                salario: "S/ 4,000 - S/ 12,000"
+            },
+
+
+            {
+                id: "inteligencia-artificial",
+                nombre: "Inteligencia Artificial",
+                icono: "🤖",
+
+                descripcion:
+                    "Desarrolla sistemas capaces de analizar información, reconocer patrones y realizar tareas inteligentes.",
+
+                ramas: [
+                    "Machine Learning",
+                    "Deep Learning",
+                    "Procesamiento de lenguaje natural",
+                    "Visión artificial",
+                    "Robótica inteligente",
+                    "IA generativa",
+                    "Ciencia de datos"
+                ],
+
+                habilidades: [
+                    "Matemática",
+                    "Programación",
+                    "Pensamiento lógico",
+                    "Análisis de datos",
+                    "Creatividad"
+                ],
+
+                universidades: [
+                    "UTEC",
+                    "PUCP",
+                    "UNI"
+                ],
+
+                cursos: [
+                    "Python",
+                    "Matemática",
+                    "Machine Learning",
+                    "Deep Learning"
+                ],
+
+                proyectos: [
+                    "Crear un chatbot",
+                    "Entrenar un modelo",
+                    "Crear un sistema de recomendación",
+                    "Analizar datos"
+                ],
+
+                salario: "S/ 5,000 - S/ 15,000"
+            },
+
+
+            {
+                id: "robotica",
+                nombre: "Robótica",
+                icono: "🦾",
+
+                descripcion:
+                    "Combina programación, electrónica y mecánica para diseñar sistemas y robots capaces de realizar tareas.",
+
+                ramas: [
+                    "Robótica industrial",
+                    "Robótica educativa",
+                    "Automatización",
+                    "Robótica móvil",
+                    "Drones",
+                    "Sistemas autónomos"
+                ],
+
+                habilidades: [
+                    "Matemática",
+                    "Programación",
+                    "Electrónica",
+                    "Creatividad",
+                    "Resolución de problemas"
+                ],
+
+                universidades: [
+                    "UNI",
+                    "UTEC",
+                    "PUCP"
+                ],
+
+                cursos: [
+                    "Arduino",
+                    "Electrónica",
+                    "Python",
+                    "Programación"
+                ],
+
+                proyectos: [
+                    "Construir un robot",
+                    "Crear un brazo robótico",
+                    "Automatizar una tarea",
+                    "Crear un vehículo autónomo"
+                ],
+
+                salario: "S/ 3,500 - S/ 10,000"
+            }
+
+        ]
+    },
+
+
+    // ==================================================
+    // DISEÑO Y CREATIVIDAD
+    // ==================================================
+
+    {
+        categoria: "Diseño y Creatividad",
+
+        carreras: [
+
+            {
+                id: "diseno-grafico",
+                nombre: "Diseño Gráfico",
+                icono: "🎨",
+
+                descripcion:
+                    "Comunica ideas mediante elementos visuales, identidad gráfica y composición.",
+
+                ramas: [
+                    "Branding",
+                    "Identidad visual",
+                    "Ilustración",
+                    "Diseño editorial",
+                    "Publicidad",
+                    "Diseño digital"
+                ],
+
+                habilidades: [
+                    "Creatividad",
+                    "Composición",
+                    "Comunicación visual",
+                    "Tipografía",
+                    "Pensamiento creativo"
+                ],
+
+                universidades: [
+                    "PUCP",
+                    "UPC",
+                    "USIL"
+                ],
+
+                cursos: [
+                    "Diseño visual",
+                    "Illustrator",
+                    "Photoshop",
+                    "Tipografía"
+                ],
+
+                proyectos: [
+                    "Crear una identidad de marca",
+                    "Diseñar un afiche",
+                    "Crear una revista",
+                    "Diseñar una campaña"
+                ],
+
+                salario: "S/ 2,000 - S/ 7,000"
+            },
+
+
+            {
+                id: "uxui",
+                nombre: "Diseño UX/UI",
+                icono: "🖌️",
+
+                descripcion:
+                    "Diseña experiencias digitales fáciles de utilizar, accesibles y centradas en las necesidades de las personas.",
+
+                ramas: [
+                    "UX Research",
+                    "UI Design",
+                    "Product Design",
+                    "Interaction Design",
+                    "Design Systems"
+                ],
+
+                habilidades: [
+                    "Empatía",
+                    "Creatividad",
+                    "Investigación",
+                    "Diseño visual",
+                    "Resolución de problemas"
+                ],
+
+                universidades: [
+                    "PUCP",
+                    "UPC",
+                    "UTEC"
+                ],
+
+                cursos: [
+                    "Figma",
+                    "UX Research",
+                    "Diseño de interfaces",
+                    "Prototipado"
+                ],
+
+                proyectos: [
+                    "Diseñar una aplicación",
+                    "Crear un prototipo",
+                    "Realizar una investigación UX",
+                    "Rediseñar una página web"
+                ],
+
+                salario: "S/ 2,500 - S/ 8,000"
+            },
+
+
+            {
+                id: "animacion",
+                nombre: "Animación Digital",
+                icono: "🎬",
+
+                descripcion:
+                    "Crea personajes, escenas y contenidos audiovisuales mediante técnicas de animación.",
+
+                ramas: [
+                    "Animación 2D",
+                    "Animación 3D",
+                    "Motion Graphics",
+                    "Modelado 3D",
+                    "Efectos visuales"
+                ],
+
+                habilidades: [
+                    "Dibujo",
+                    "Creatividad",
+                    "Narrativa",
+                    "Diseño visual",
+                    "Paciencia"
+                ],
+
+                universidades: [
+                    "PUCP",
+                    "UPC",
+                    "Toulouse Lautrec"
+                ],
+
+                cursos: [
+                    "Blender",
+                    "Animación 2D",
+                    "Modelado 3D",
+                    "Motion Graphics"
+                ],
+
+                proyectos: [
+                    "Crear una animación corta",
+                    "Modelar un personaje",
+                    "Crear un cortometraje",
+                    "Crear una escena 3D"
+                ],
+
+                salario: "S/ 2,000 - S/ 7,000"
+            }
+
+        ]
+    },
+
+
+    // ==================================================
+    // CIENCIAS DE LA SALUD
+    // ==================================================
+
+    {
+        categoria: "Ciencias de la Salud",
+
+        carreras: [
+
+            {
+                id: "medicina",
+                nombre: "Medicina",
+                icono: "🩺",
+
+                descripcion:
+                    "Estudia la prevención, diagnóstico y tratamiento de enfermedades y condiciones de salud.",
+
+                ramas: [
+                    "Medicina interna",
+                    "Cirugía",
+                    "Pediatría",
+                    "Cardiología",
+                    "Neurología",
+                    "Psiquiatría"
+                ],
+
+                habilidades: [
+                    "Disciplina",
+                    "Empatía",
+                    "Pensamiento científico",
+                    "Responsabilidad",
+                    "Toma de decisiones"
+                ],
+
+                universidades: [
+                    "UNMSM",
+                    "UPCH",
+                    "UPC"
+                ],
+
+                cursos: [
+                    "Biología",
+                    "Química",
+                    "Anatomía",
+                    "Fisiología"
+                ],
+
+                proyectos: [
+                    "Investigación científica",
+                    "Campañas de prevención",
+                    "Educación en salud"
+                ],
+
+                salario: "Variable según especialidad y experiencia"
+            },
+
+
+            {
+                id: "psicologia",
+                nombre: "Psicología",
+                icono: "🧠",
+
+                descripcion:
+                    "Estudia el comportamiento y los procesos mentales para comprender y apoyar a las personas.",
+
+                ramas: [
+                    "Psicología clínica",
+                    "Psicología educativa",
+                    "Psicología organizacional",
+                    "Psicología social",
+                    "Neuropsicología"
+                ],
+
+                habilidades: [
+                    "Empatía",
+                    "Comunicación",
+                    "Escucha activa",
+                    "Análisis",
+                    "Responsabilidad"
+                ],
+
+                universidades: [
+                    "UNMSM",
+                    "PUCP",
+                    "UPCH"
+                ],
+
+                cursos: [
+                    "Psicología general",
+                    "Desarrollo humano",
+                    "Neurociencia",
+                    "Investigación"
+                ],
+
+                proyectos: [
+                    "Campañas educativas",
+                    "Investigación social",
+                    "Programas de orientación"
+                ],
+
+                salario: "Variable según especialidad y experiencia"
+            },
+
+
+            {
+                id: "enfermeria",
+                nombre: "Enfermería",
+                icono: "💉",
+
+                descripcion:
+                    "Proporciona cuidados de salud y participa en la prevención, atención y recuperación de pacientes.",
+
+                ramas: [
+                    "Enfermería clínica",
+                    "Enfermería pediátrica",
+                    "Emergencias",
+                    "Salud comunitaria",
+                    "Cuidados intensivos"
+                ],
+
+                habilidades: [
+                    "Empatía",
+                    "Responsabilidad",
+                    "Trabajo en equipo",
+                    "Organización",
+                    "Comunicación"
+                ],
+
+                universidades: [
+                    "UNMSM",
+                    "UPCH"
+                ],
+
+                cursos: [
+                    "Biología",
+                    "Anatomía",
+                    "Primeros auxilios",
+                    "Salud comunitaria"
+                ],
+
+                proyectos: [
+                    "Campañas de prevención",
+                    "Educación sanitaria",
+                    "Promoción de hábitos saludables"
+                ],
+
+                salario: "Variable según institución y experiencia"
+            }
+
+        ]
+    },
+
+
+    // ==================================================
+    // INGENIERÍA
+    // ==================================================
+
+    {
+        categoria: "Ingeniería",
+
+        carreras: [
+
+            {
+                id: "civil",
+                nombre: "Ingeniería Civil",
+                icono: "🏗️",
+
+                descripcion:
+                    "Diseña, construye y supervisa infraestructura como edificios, carreteras, puentes y sistemas hidráulicos.",
+
+                ramas: [
+                    "Estructuras",
+                    "Construcción",
+                    "Geotecnia",
+                    "Hidráulica",
+                    "Transportes",
+                    "Gestión de proyectos"
+                ],
+
+                habilidades: [
+                    "Matemática",
+                    "Física",
+                    "Planificación",
+                    "Resolución de problemas",
+                    "Trabajo en equipo"
+                ],
+
+                universidades: [
+                    "UNI",
+                    "PUCP",
+                    "UNMSM"
+                ],
+
+                cursos: [
+                    "Matemática",
+                    "Física",
+                    "AutoCAD",
+                    "Estructuras"
+                ],
+
+                proyectos: [
+                    "Diseñar un puente",
+                    "Diseñar una estructura",
+                    "Modelar una vivienda",
+                    "Proyecto hidráulico"
+                ],
+
+                salario: "S/ 3,000 - S/ 10,000"
+            },
+
+
+            {
+                id: "industrial",
+                nombre: "Ingeniería Industrial",
+                icono: "⚙️",
+
+                descripcion:
+                    "Optimiza procesos, recursos y sistemas para mejorar la productividad de organizaciones.",
+
+                ramas: [
+                    "Gestión de operaciones",
+                    "Logística",
+                    "Calidad",
+                    "Procesos",
+                    "Gestión empresarial",
+                    "Seguridad industrial"
+                ],
+
+                habilidades: [
+                    "Análisis",
+                    "Matemática",
+                    "Organización",
+                    "Liderazgo",
+                    "Gestión"
+                ],
+
+                universidades: [
+                    "UNI",
+                    "PUCP",
+                    "UPC"
+                ],
+
+                cursos: [
+                    "Excel",
+                    "Estadística",
+                    "Gestión de procesos",
+                    "Logística"
+                ],
+
+                proyectos: [
+                    "Optimizar un proceso",
+                    "Diseñar un sistema logístico",
+                    "Analizar una empresa"
+                ],
+
+                salario: "S/ 3,000 - S/ 10,000"
+            },
+
+
+            {
+                id: "mecatronica",
+                nombre: "Ingeniería Mecatrónica",
+                icono: "⚡",
+
+                descripcion:
+                    "Integra mecánica, electrónica, programación y control para desarrollar sistemas automatizados.",
+
+                ramas: [
+                    "Automatización",
+                    "Robótica",
+                    "Control",
+                    "Electrónica",
+                    "Sistemas inteligentes"
+                ],
+
+                habilidades: [
+                    "Matemática",
+                    "Física",
+                    "Programación",
+                    "Electrónica",
+                    "Pensamiento lógico"
+                ],
+
+                universidades: [
+                    "UNI",
+                    "PUCP",
+                    "UTEC"
+                ],
+
+                cursos: [
+                    "Arduino",
+                    "Electrónica",
+                    "Programación",
+                    "Control automático"
+                ],
+
+                proyectos: [
+                    "Crear un robot",
+                    "Automatizar una máquina",
+                    "Crear un sistema inteligente"
+                ],
+
+                salario: "S/ 3,500 - S/ 10,000"
+            }
+
+        ]
+    },
+
+
+    // ==================================================
+    // CIENCIAS SOCIALES Y NEGOCIOS
+    // ==================================================
+
+    {
+        categoria: "Ciencias Sociales y Negocios",
+
+        carreras: [
+
+            {
+                id: "derecho",
+                nombre: "Derecho",
+                icono: "⚖️",
+
+                descripcion:
+                    "Estudia las normas jurídicas y su aplicación para resolver conflictos y proteger derechos.",
+
+                ramas: [
+                    "Derecho penal",
+                    "Derecho civil",
+                    "Derecho laboral",
+                    "Derecho empresarial",
+                    "Derecho constitucional",
+                    "Derecho internacional"
+                ],
+
+                habilidades: [
+                    "Argumentación",
+                    "Comunicación",
+                    "Análisis",
+                    "Investigación",
+                    "Pensamiento crítico"
+                ],
+
+                universidades: [
+                    "PUCP",
+                    "UNMSM",
+                    "USMP"
+                ],
+
+                cursos: [
+                    "Introducción al Derecho",
+                    "Constitución",
+                    "Argumentación",
+                    "Investigación jurídica"
+                ],
+
+                proyectos: [
+                    "Debates",
+                    "Investigación jurídica",
+                    "Campañas de derechos"
+                ],
+
+                salario: "Variable según especialidad y experiencia"
+            },
+
+
+            {
+                id: "administracion",
+                nombre: "Administración",
+                icono: "💼",
+
+                descripcion:
+                    "Gestiona recursos, personas y procesos para alcanzar objetivos dentro de una organización.",
+
+                ramas: [
+                    "Gestión empresarial",
+                    "Recursos humanos",
+                    "Marketing",
+                    "Finanzas",
+                    "Emprendimiento",
+                    "Negocios internacionales"
+                ],
+
+                habilidades: [
+                    "Liderazgo",
+                    "Organización",
+                    "Comunicación",
+                    "Análisis",
+                    "Toma de decisiones"
+                ],
+
+                universidades: [
+                    "UNMSM",
+                    "PUCP",
+                    "UPC"
+                ],
+
+                cursos: [
+                    "Gestión",
+                    "Marketing",
+                    "Finanzas",
+                    "Emprendimiento"
+                ],
+
+                proyectos: [
+                    "Crear un emprendimiento",
+                    "Diseñar un plan empresarial",
+                    "Crear una estrategia de marketing"
+                ],
+
+                salario: "S/ 2,500 - S/ 9,000"
+            },
+
+
+            {
+                id: "contabilidad",
+                nombre: "Contabilidad",
+                icono: "📊",
+
+                descripcion:
+                    "Registra, analiza e interpreta información financiera para apoyar la toma de decisiones.",
+
+                ramas: [
+                    "Contabilidad financiera",
+                    "Auditoría",
+                    "Tributación",
+                    "Contabilidad empresarial",
+                    "Finanzas"
+                ],
+
+                habilidades: [
+                    "Matemática",
+                    "Organización",
+                    "Análisis",
+                    "Precisión",
+                    "Responsabilidad"
+                ],
+
+                universidades: [
+                    "UNMSM",
+                    "PUCP",
+                    "UPC"
+                ],
+
+                cursos: [
+                    "Contabilidad básica",
+                    "Excel",
+                    "Finanzas",
+                    "Tributación"
+                ],
+
+                proyectos: [
+                    "Crear un presupuesto",
+                    "Analizar una empresa",
+                    "Diseñar un plan financiero"
+                ],
+
+                salario: "S/ 2,500 - S/ 8,000"
+            }
+
+        ]
+    }
+
+];
+
+// ======================================================
+// CONTADOR DE TIEMPO
+// ======================================================
+
+setInterval(() => {
+
+    if (!APP.perfil) return;
+
+    APP.estadisticas.minutosUso++;
+
+    guardarPerfil();
+
+    actualizarDashboard();
+
+}, 60000);
+
+
+// ======================================================
+// INICIO
+// ======================================================
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    cargarPerfil();
+
+    if (APP.perfil) {
+        iniciarDashboard();
+    }
+
+});
+
+// ======================================================
+// NEXARIS IA
+// ======================================================
 
 async function chat() {
 
-    const input = document.getElementById("pregunta");
-    const chatBox = document.getElementById("chat-box");
+    const input = $("pregunta");
+    const chatBox = $("chat-box");
+
+    if (!input || !chatBox) return;
 
     const mensaje = input.value.trim();
 
-    if (mensaje === "") return;
+    if (!mensaje) return;
 
-    // Mensaje del usuario
+    // Mostrar mensaje del usuario
+
     chatBox.innerHTML += `
-        <div class="message user">
-            ${mensaje}
+        <div class="message usuario">
+            👤 ${mensaje}
         </div>
     `;
 
     input.value = "";
 
-    // Crear mensaje "Pensando..."
-    const mensajeIA = document.createElement("div");
-    mensajeIA.className = "message nexaris";
-    mensajeIA.innerHTML = "🤖 Pensando...";
+    // Indicador de escritura
 
-    chatBox.appendChild(mensajeIA);
+    const loading = document.createElement("div");
+
+    loading.className = "message nexaris";
+
+    loading.id = "nexaris-loading";
+
+    loading.innerHTML = `
+        🤖 NEXARIS está pensando...
+    `;
+
+    chatBox.appendChild(loading);
 
     chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
 
-        const respuesta = await fetch("http://localhost:3000/chat", {
+        const response = await fetch(
+            `${CONFIG.API_URL}`,
+            {
+                method: "POST",
 
-            method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                mensaje
-            })
-
-        });
-
-        const datos = await respuesta.json();
-
-        mensajeIA.innerHTML = "🤖 " + datos.respuesta;
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        mensajeIA.innerHTML =
-            "⚠️ No pude comunicarme con Gemini.";
-
-    }
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-}
-
-
-
-// ===============================
-// ENTER PARA ENVIAR
-// ===============================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const input = document.getElementById("pregunta");
-
-    if (input) {
-
-        input.addEventListener("keydown", (e) => {
-
-            if (e.key === "Enter") {
-
-                e.preventDefault();
-
-                chat();
-
+                body: JSON.stringify({
+                    mensaje
+                })
             }
+        );
 
-        });
+        if (!response.ok) {
+            throw new Error(
+                `Servidor respondió ${response.status}`
+            );
+        }
 
-    }
+        const data = await response.json();
 
-});
+        loading.remove();
 
+        const respuestaIA = data.answer || data.respuesta;
 
-function actualizarHora() {
+        if (!respuestaIA) {
+            throw new Error("La API no devolvió ningún texto.");
+        }
 
-    const ahora = new Date();
+        chatBox.innerHTML += `
+    <div class="message nexaris">
+        🤖 ${formatearRespuesta(respuestaIA)}
+    </div>
+`;
 
-    const hora = ahora.toLocaleTimeString([], {
+        APP.estadisticas.consultasIA++;
 
-        hour: "2-digit",
+        agregarXP(5);
 
-        minute: "2-digit"
+        guardarPerfil();
 
-    });
+        actualizarDashboard();
 
-    const reloj = document.getElementById("horaActual");
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-    if (reloj) {
+    } catch (error) {
 
-        reloj.textContent = hora;
+        console.error("❌ Error en NEXARIS IA:", error);
+
+        loading.remove();
+
+        chatBox.innerHTML += `
+            <div class="message nexaris">
+                ⚠️ No pude conectarme con NEXARIS IA.
+                <br><br>
+                Verifica que el servidor esté funcionando.
+            </div>
+        `;
 
     }
 
 }
 
-setInterval(actualizarHora, 1000);
 
-actualizarHora();
+// ======================================================
+// FORMATEAR RESPUESTA IA
+// ======================================================
+
+function formatearRespuesta(texto) {
+
+    if (!texto) {
+        return "No recibí una respuesta.";
+    }
+
+    return texto
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n/g, "<br>");
+}

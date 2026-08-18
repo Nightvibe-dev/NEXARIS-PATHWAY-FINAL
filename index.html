@@ -80,7 +80,7 @@
             </button>
 
             <div class="version">
-                NEXARIS PATHWAY v2.0
+                NEXARIS PATHWAY v3.0
             </div>
 
 
@@ -91,7 +91,9 @@
 
     </section>
 
-    <div class="dashboard">
+    <div class="dashboard" style="display:none;">
+
+
 
 
         <!-- MENU LATERAL -->
@@ -136,7 +138,7 @@
                     🚀 Mi Ruta
                 </button>
 
-                <button onclick="mostrar('correo'); cargarCorreo()">
+                <button onclick="mostrar('correo'); actualizarPerfil();">
                     📧 Mi Correo
                 </button>
 
@@ -145,7 +147,9 @@
             <div class="user-panel">
 
                 <div class="user-avatar">
-                    <img src="img/avatar.png" alt="">
+
+                    <img id="avatarNexaris" src="img/avatar.png" alt="NEXARIS">
+
                 </div>
 
                 <h3 id="nombreSidebar">
@@ -158,13 +162,17 @@
 
                 <div class="xp-container">
 
-                    <span>Nivel 1 • Explorador</span>
+                    <span>
+                        Nivel <strong id="nivelUsuario">1</strong> • Explorador
+                    </span>
 
                     <div class="xp-bar">
-                        <div class="xp-fill"></div>
+                        <div class="xp-fill" id="barraXP"></div>
                     </div>
 
-                    <small>20 / 100 XP</small>
+                    <small id="xpUsuario">
+                        0 / 100 XP
+                    </small>
 
                 </div>
 
