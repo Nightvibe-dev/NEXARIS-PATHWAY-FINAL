@@ -2070,7 +2070,68 @@ function formatearRespuesta(texto) {
         return "No recibí una respuesta.";
     }
 
-    return texto
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\n/g, "<br>");
+    let html = texto;
+
+    // Escapar HTML para evitar que la IA inserte etiquetas directamente
+    html = html
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+    // Bloques de código
+    html = html.replace(
+        /```([\s\S]*?)```/g,
+        '<pre class="codigo"><code>$1</code></pre>'
+    );
+
+    // Código inline
+    html = html.replace(
+        /`([^`]+)`/g,
+        '<code>$1</code>'
+    );
+
+    // Títulos Markdown
+    html = html.replace(
+        /^### (.*)$/gm,
+        '<h4>$1</h4>'
+    );
+
+    html = html.replace(
+        /^## (.*)$/gm,
+        '<h3>$1</h3>'
+    );
+
+    html = html.replace(
+        /^# (.*)$/gm,
+        '<h2>$1</h2>'
+    );
+
+    // Negrita
+    html = html.replace(
+        /\*\*(.*?)\*\*/g,
+        '<strong>$1</strong>'
+    );
+
+    // Cursiva
+    html = html.replace(
+        /\*(.*?)\*/g,
+        '<em>$1</em>'
+    );
+
+    // Listas con guion
+    html = html.replace(
+        /^- (.*)$/gm,
+        '<li>$1</li>'
+    );
+
+    // Convertir grupos de <li> en listas
+    html = html.replace(
+        /(<li>.*<\/li>)/gs,
+        '<ul>$1</ul>'
+    );
+
+    // Saltos de línea
+    html = html.replace(/\n/g, "<br>");
+
+    return html;
 }
