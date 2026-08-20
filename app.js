@@ -13,7 +13,7 @@ const CONFIG = {
 
     VERSION: "3.0",
 
-    API_URL: "http://localhost:3000/chat",
+    API_URL: "https://nexaris-pathway-api.onrender.com/chat",
 
     STORAGE: "perfilNexaris"
 
