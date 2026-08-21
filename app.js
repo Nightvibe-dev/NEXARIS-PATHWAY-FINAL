@@ -90,19 +90,33 @@ function cargarPerfil() {
 function mostrar(seccion) {
 
     document
-
         .querySelectorAll(".panel")
-
-        .forEach(panel => panel.classList.add("oculto"));
+        .forEach(panel => {
+            panel.classList.add("oculto");
+        });
 
     const destino = $(seccion);
 
-    if (destino) {
-
-        destino.classList.remove("oculto");
-
+    if (!destino) {
+        console.error(
+            `NEXARIS: No existe el panel "${seccion}"`
+        );
+        return;
     }
 
+    destino.classList.remove("oculto");
+
+    // Si el usuario entra al Test Vocacional,
+    // iniciar inmediatamente la primera pregunta.
+    if (seccion === "test") {
+    const testContainer = $("test-container");
+
+    if (testContainer) {
+        testContainer.style.display = "block";
+    }
+
+    mostrarPregunta();
+}
 }
 
 // ======================================================
@@ -368,107 +382,102 @@ function actualizarXP() {
 const TEST_VOCACIONAL = [
 
     {
-        pregunta: "¿Qué actividad te resulta más interesante?",
-
+        pregunta: "¿Qué actividad realizarías con mayor interés?",
         opciones: [
             {
-                texto: "Crear aplicaciones, páginas web o sistemas",
+                texto: "Crear una aplicación, página web o sistema",
                 perfil: "tecnologico"
             },
             {
-                texto: "Diseñar dibujos, imágenes o contenido visual",
+                texto: "Diseñar una ilustración, logo o contenido visual",
                 perfil: "creativo"
             },
             {
-                texto: "Investigar cómo funcionan las cosas",
+                texto: "Investigar cómo funciona un fenómeno",
                 perfil: "cientifico"
             },
             {
-                texto: "Ayudar, orientar o trabajar con personas",
+                texto: "Ayudar a una persona a resolver un problema",
                 perfil: "social"
             }
         ]
     },
 
     {
-        pregunta: "Cuando tienes un problema difícil, ¿qué haces primero?",
-
+        pregunta: "Cuando encuentras un problema difícil, ¿qué haces primero?",
         opciones: [
             {
-                texto: "Busco una solución lógica y estructurada",
+                texto: "Busco una solución lógica paso a paso",
                 perfil: "tecnologico"
             },
             {
-                texto: "Pienso en una solución diferente o creativa",
+                texto: "Intento encontrar una solución diferente",
                 perfil: "creativo"
             },
             {
-                texto: "Investigo información antes de decidir",
+                texto: "Investigo información para comprenderlo",
                 perfil: "cientifico"
             },
             {
-                texto: "Pregunto a otras personas y considero sus opiniones",
+                texto: "Converso con otras personas para conocer sus ideas",
                 perfil: "social"
             }
         ]
     },
 
     {
-        pregunta: "¿Qué proyecto preferirías realizar?",
-
+        pregunta: "¿Qué proyecto te gustaría desarrollar?",
         opciones: [
             {
-                texto: "Crear un videojuego o aplicación",
+                texto: "Un videojuego o aplicación",
                 perfil: "tecnologico"
             },
             {
-                texto: "Diseñar una campaña visual",
+                texto: "Una campaña visual o animación",
                 perfil: "creativo"
             },
             {
-                texto: "Realizar un experimento científico",
+                texto: "Un experimento o investigación",
                 perfil: "cientifico"
             },
             {
-                texto: "Crear una campaña para ayudar a la comunidad",
+                texto: "Un proyecto para ayudar a la comunidad",
                 perfil: "social"
             }
         ]
     },
 
     {
-        pregunta: "¿Qué asignatura suele llamarte más la atención?",
-
+        pregunta: "¿Qué tipo de actividad te resulta más satisfactoria?",
         opciones: [
             {
-                texto: "Computación o tecnología",
+                texto: "Resolver problemas utilizando tecnología",
                 perfil: "tecnologico"
             },
             {
-                texto: "Arte o comunicación",
+                texto: "Crear algo original que otras personas puedan apreciar",
                 perfil: "creativo"
             },
             {
-                texto: "Ciencia o matemática",
+                texto: "Descubrir información que antes no conocías",
                 perfil: "cientifico"
             },
             {
-                texto: "Ciencias sociales o comunicación",
+                texto: "Conseguir que otras personas mejoren o aprendan",
                 perfil: "social"
             }
         ]
     },
 
     {
-        pregunta: "¿Qué habilidad te gustaría desarrollar?",
-
+        pregunta: "¿Qué habilidad te gustaría dominar?",
         opciones: [
             {
-                texto: "Programación y tecnología",
+                texto: "Programación y desarrollo tecnológico",
                 perfil: "tecnologico"
             },
             {
-                texto: "Diseño e imaginación",
+                texto: "Diseño, ilustración o animación",
                 perfil: "creativo"
             },
             {
@@ -483,69 +492,154 @@ const TEST_VOCACIONAL = [
     },
 
     {
-        pregunta: "¿Cómo prefieres trabajar?",
-
+        pregunta: "¿En qué ambiente preferirías trabajar?",
         opciones: [
             {
-                texto: "Construyendo soluciones con tecnología",
+                texto: "Un laboratorio tecnológico o empresa de software",
                 perfil: "tecnologico"
             },
             {
-                texto: "Creando y diseñando",
+                texto: "Un estudio creativo o agencia de diseño",
                 perfil: "creativo"
             },
             {
-                texto: "Analizando información y datos",
+                texto: "Un laboratorio o centro de investigación",
                 perfil: "cientifico"
             },
             {
-                texto: "Colaborando y ayudando a otros",
+                texto: "Una institución donde pueda trabajar con personas",
                 perfil: "social"
             }
         ]
     },
 
     {
-        pregunta: "¿Qué problema de tu comunidad te gustaría ayudar a resolver?",
-
+        pregunta: "¿Qué problema te gustaría ayudar a resolver?",
         opciones: [
             {
-                texto: "Problemas relacionados con tecnología",
+                texto: "Problemas relacionados con tecnología y seguridad digital",
                 perfil: "tecnologico"
             },
             {
-                texto: "Problemas de comunicación y expresión",
+                texto: "Problemas de comunicación y expresión visual",
                 perfil: "creativo"
             },
             {
-                texto: "Problemas relacionados con ciencia o ambiente",
+                texto: "Problemas relacionados con ciencia y ambiente",
                 perfil: "cientifico"
             },
             {
-                texto: "Problemas sociales o educativos",
+                texto: "Problemas sociales y educativos",
                 perfil: "social"
             }
         ]
     },
 
     {
-        pregunta: "¿Qué tipo de resultado te produciría más satisfacción?",
+        pregunta: "¿Qué asignatura despierta más tu curiosidad?",
+        opciones: [
+            {
+                texto: "Computación y tecnología",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Arte, diseño o comunicación",
+                perfil: "creativo"
+            },
+            {
+                texto: "Ciencia y matemática",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Ciencias sociales",
+                perfil: "social"
+            }
+        ]
+    },
 
+    {
+        pregunta: "¿Qué resultado te produciría mayor satisfacción?",
         opciones: [
             {
                 texto: "Ver funcionando algo que programé",
                 perfil: "tecnologico"
             },
             {
-                texto: "Ver una creación visual terminada",
+                texto: "Ver terminada una creación visual",
                 perfil: "creativo"
             },
             {
-                texto: "Descubrir o demostrar algo",
+                texto: "Demostrar o descubrir algo nuevo",
                 perfil: "cientifico"
             },
             {
-                texto: "Saber que ayudé a alguien",
+                texto: "Saber que ayudé a otra persona",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Cómo prefieres aprender algo nuevo?",
+        opciones: [
+            {
+                texto: "Experimentando con herramientas y tecnología",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Practicando y creando proyectos",
+                perfil: "creativo"
+            },
+            {
+                texto: "Investigando y analizando información",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Conversando y trabajando con otras personas",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué tipo de desafío elegirías?",
+        opciones: [
+            {
+                texto: "Desarrollar una solución tecnológica",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Crear una identidad visual para una marca",
+                perfil: "creativo"
+            },
+            {
+                texto: "Resolver un problema mediante investigación",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Organizar un proyecto para beneficiar a un grupo",
+                perfil: "social"
+            }
+        ]
+    },
+
+    {
+        pregunta: "¿Qué te gustaría conseguir con tu futura profesión?",
+        opciones: [
+            {
+                texto: "Crear tecnología que resuelva problemas",
+                perfil: "tecnologico"
+            },
+            {
+                texto: "Crear ideas y experiencias originales",
+                perfil: "creativo"
+            },
+            {
+                texto: "Generar conocimiento y descubrir soluciones",
+                perfil: "cientifico"
+            },
+            {
+                texto: "Mejorar la vida de otras personas",
                 perfil: "social"
             }
         ]
@@ -553,529 +647,6 @@ const TEST_VOCACIONAL = [
 
 ];
 
-let preguntaActual = 0;
-
-
-// ======================================================
-// INICIAR TEST
-// ======================================================
-
-function iniciarTest() {
-
-    reiniciarTest();
-
-    preguntaActual = 0;
-
-    mostrarPregunta();
-
-}
-
-
-// ======================================================
-// REINICIAR TEST
-// ======================================================
-
-function reiniciarTest() {
-
-    APP.puntos = {
-
-        creativo: 0,
-        tecnologico: 0,
-        cientifico: 0,
-        social: 0
-
-    };
-
-    const resultado = $("resultado");
-
-    if (resultado) {
-
-        resultado.innerHTML = "";
-
-    }
-
-}
-
-
-// ======================================================
-// MOSTRAR PREGUNTA
-// ======================================================
-
-function mostrarPregunta() {
-
-    const resultado = $("resultado");
-
-    if (!resultado) return;
-
-
-    if (preguntaActual >= TEST_VOCACIONAL.length) {
-
-        finalizarTest();
-
-        return;
-
-    }
-
-
-    const pregunta = TEST_VOCACIONAL[preguntaActual];
-
-
-    resultado.innerHTML = `
-
-        <div class="test-question">
-
-            <h2>
-                Pregunta ${preguntaActual + 1}
-                de ${TEST_VOCACIONAL.length}
-            </h2>
-
-            <h3>
-                ${pregunta.pregunta}
-            </h3>
-
-            <div class="test-options">
-
-                ${pregunta.opciones.map((opcion, indice) => `
-
-                    <button
-                        onclick="responderTest('${opcion.perfil}')"
-                    >
-                        ${indice + 1}. ${opcion.texto}
-                    </button>
-
-                `).join("")}
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-// ======================================================
-// RESPONDER TEST
-// ======================================================
-
-function responderTest(perfil) {
-
-    if (APP.puntos[perfil] === undefined) return;
-
-
-    APP.puntos[perfil]++;
-
-
-    preguntaActual++;
-
-
-    agregarXP(3);
-
-
-    mostrarPregunta();
-
-}
-
-
-// ======================================================
-// FINALIZAR TEST
-// ======================================================
-
-function finalizarTest() {
-
-    if (!APP.perfil) return;
-
-
-    APP.perfil.testCompletado = true;
-
-
-    const resultados = calcularPerfil();
-
-
-    APP.perfil.perfilVocacional = resultados;
-
-
-    guardarPerfil();
-
-
-    actualizarDashboard();
-
-
-    mostrarResultado(resultados);
-
-}
-
-
-// ======================================================
-// CALCULAR PERFIL
-// ======================================================
-
-function calcularPerfil() {
-
-    const puntos = APP.puntos;
-
-
-    const total =
-
-        puntos.creativo +
-
-        puntos.tecnologico +
-
-        puntos.cientifico +
-
-        puntos.social;
-
-
-    const porcentaje = {
-
-
-        creativo: total
-            ? Math.round((puntos.creativo / total) * 100)
-            : 0,
-
-
-        tecnologico: total
-            ? Math.round((puntos.tecnologico / total) * 100)
-            : 0,
-
-
-        cientifico: total
-            ? Math.round((puntos.cientifico / total) * 100)
-            : 0,
-
-
-        social: total
-            ? Math.round((puntos.social / total) * 100)
-            : 0
-
-    };
-
-
-    const perfiles = [
-
-        {
-            id: "tecnologico",
-            nombre: "Tecnológico",
-            icono: "💻",
-            puntos: puntos.tecnologico
-        },
-
-        {
-            id: "creativo",
-            nombre: "Creativo",
-            icono: "🎨",
-            puntos: puntos.creativo
-        },
-
-        {
-            id: "cientifico",
-            nombre: "Científico",
-            icono: "🔬",
-            puntos: puntos.cientifico
-        },
-
-        {
-            id: "social",
-            nombre: "Social",
-            icono: "🤝",
-            puntos: puntos.social
-        }
-
-    ];
-
-
-    perfiles.sort((a, b) => b.puntos - a.puntos);
-
-
-    return {
-
-        dominante: perfiles[0],
-
-        segundo: perfiles[1],
-
-        porcentajes: porcentaje,
-
-        puntos: { ...puntos }
-
-    };
-
-}
-
-
-// ======================================================
-// MOSTRAR RESULTADO
-// ======================================================
-
-function mostrarResultado(perfil) {
-
-    const resultado = $("resultado");
-
-    if (!resultado) return;
-
-    const carreras = obtenerCarrerasRecomendadas(perfil);
-
-    resultado.innerHTML = `
-
-        <div class="test-result">
-
-            <h2>
-                🎯 Tu perfil vocacional
-            </h2>
-
-            <h1>
-                ${perfil.dominante.icono}
-                ${perfil.dominante.nombre}
-            </h1>
-
-            <div class="perfil-barras">
-
-                <p>
-                    💻 Tecnológico:
-                    <strong>
-                        ${perfil.porcentajes.tecnologico}%
-                    </strong>
-                </p>
-
-                <p>
-                    🎨 Creativo:
-                    <strong>
-                        ${perfil.porcentajes.creativo}%
-                    </strong>
-                </p>
-
-                <p>
-                    🔬 Científico:
-                    <strong>
-                        ${perfil.porcentajes.cientifico}%
-                    </strong>
-                </p>
-
-                <p>
-                    🤝 Social:
-                    <strong>
-                        ${perfil.porcentajes.social}%
-                    </strong>
-                </p>
-
-            </div>
-
-            <h3>
-                🎓 Carreras compatibles
-            </h3>
-
-            <div class="recommended-careers">
-
-                ${carreras.map(carrera => `
-
-                    <button
-                        onclick="verProfesion('${carrera.id}')"
-                    >
-                        ${carrera.icono}
-                        ${carrera.nombre}
-                    </button>
-
-                `).join("")}
-
-            </div>
-
-            <button
-                class="primary"
-                onclick="iniciarTest()"
-            >
-                🔄 Repetir test
-            </button>
-
-        </div>
-
-    `;
-
-}
-
-
-// ======================================================
-// VER PROFESIÓN
-// ======================================================
-
-function verProfesion(id) {
-
-    let carreraEncontrada = null;
-
-    for (const categoria of CARRERAS) {
-
-        const carrera = categoria.carreras.find(
-            c => c.id === id
-        );
-
-        if (carrera) {
-
-            carreraEncontrada = carrera;
-            break;
-
-        }
-
-    }
-
-    if (!carreraEncontrada) {
-
-        console.error("Carrera no encontrada:", id);
-        return;
-
-    }
-
-    APP.estadisticas.carrerasVisitadas++;
-
-    agregarXP(5);
-
-    guardarPerfil();
-
-    const resultado = $("resultado");
-
-    if (!resultado) return;
-
-    resultado.innerHTML = `
-
-        <div class="career-detail">
-
-            <h2>
-                ${carreraEncontrada.icono}
-                ${carreraEncontrada.nombre}
-            </h2>
-
-            <p>
-                ${carreraEncontrada.descripcion}
-            </p>
-
-            <h3>🌐 Ramas profesionales</h3>
-
-            <ul>
-                ${carreraEncontrada.ramas
-            .map(rama => `<li>${rama}</li>`)
-            .join("")}
-            </ul>
-
-            <h3>🧠 Habilidades</h3>
-
-            <ul>
-                ${carreraEncontrada.habilidades
-            .map(habilidad => `<li>${habilidad}</li>`)
-            .join("")}
-            </ul>
-
-            <h3>🎓 Universidades</h3>
-
-            <ul>
-                ${carreraEncontrada.universidades
-            .map(u => `<li>${u}</li>`)
-            .join("")}
-            </ul>
-
-            <h3>📚 Cursos recomendados</h3>
-
-            <ul>
-                ${carreraEncontrada.cursos
-            .map(curso => `<li>${curso}</li>`)
-            .join("")}
-            </ul>
-
-            <h3>🚀 Ideas de proyectos</h3>
-
-            <ul>
-                ${carreraEncontrada.proyectos
-            .map(proyecto => `<li>${proyecto}</li>`)
-            .join("")}
-            </ul>
-
-            <p>
-                💰 Salario referencial:
-                <strong>
-                    ${carreraEncontrada.salario}
-                </strong>
-            </p>
-
-            <button
-                class="primary"
-                onclick="mostrarResultado(APP.perfil.perfilVocacional)"
-            >
-                ← Volver a resultados
-            </button>
-
-        </div>
-
-    `;
-
-    actualizarDashboard();
-
-}
-
-
-// ======================================================
-// RECOMENDADOR DE CARRERAS
-// ======================================================
-
-function obtenerCarrerasRecomendadas(perfil) {
-
-    const dominante = perfil.dominante.id;
-
-
-    const mapa = {
-
-        tecnologico: [
-            "software",
-            "ciberseguridad",
-            "inteligencia-artificial",
-            "robotica",
-            "mecatronica"
-        ],
-
-        creativo: [
-            "diseno-grafico",
-            "uxui",
-            "animacion"
-        ],
-
-        cientifico: [
-            "inteligencia-artificial",
-            "medicina",
-            "enfermeria",
-            "civil",
-            "mecatronica"
-        ],
-
-        social: [
-            "psicologia",
-            "derecho",
-            "administracion",
-            "enfermeria",
-            "contabilidad"
-        ]
-
-    };
-
-
-    const ids = mapa[dominante] || [];
-
-
-    const recomendadas = [];
-
-
-    for (const categoria of CARRERAS) {
-
-        for (const carrera of categoria.carreras) {
-
-            if (ids.includes(carrera.id)) {
-
-                recomendadas.push(carrera);
-
-            }
-
-        }
-
-    }
-
-
-    return recomendadas;
-
-}
 
 // ======================================================
 // BIBLIOTECA DE CARRERAS
@@ -2134,4 +1705,262 @@ function formatearRespuesta(texto) {
     html = html.replace(/\n/g, "<br>");
 
     return html;
+}
+
+// ======================================================
+// MOTOR DEL TEST VOCACIONAL
+// ======================================================
+
+let preguntaActual = 0;
+let respuestaSeleccionada = null;
+
+function iniciarTest() {
+    preguntaActual = 0;
+    respuestaSeleccionada = null;
+
+    APP.puntos = {
+        creativo: 0,
+        tecnologico: 0,
+        cientifico: 0,
+        social: 0
+    };
+
+    const resultado = $("resultado");
+    const testContainer = $("test-container");
+
+    if (resultado) {
+        resultado.innerHTML = "";
+        resultado.style.display = "none";
+    }
+
+    if (testContainer) {
+        testContainer.style.display = "block";
+    }
+
+    mostrarPregunta();
+}
+
+function mostrarPregunta() {
+    const preguntaBox = $("pregunta-test");
+    const opcionesBox = $("opciones-test");
+    const progreso = $("test-progreso");
+    const barra = $("test-progress-fill");
+
+    if (!preguntaBox || !opcionesBox) {
+        console.error("NEXARIS: No se encontraron los elementos del test.");
+        return;
+    }
+
+    const pregunta = TEST_VOCACIONAL[preguntaActual];
+
+    if (!pregunta) {
+        console.error("NEXARIS: Pregunta inexistente.");
+        return;
+    }
+
+    respuestaSeleccionada = null;
+
+    // PROGRESO
+    if (progreso) {
+        progreso.textContent =
+            `Pregunta ${preguntaActual + 1} de ${TEST_VOCACIONAL.length}`;
+    }
+
+    if (barra) {
+        const porcentaje =
+            ((preguntaActual + 1) / TEST_VOCACIONAL.length) * 100;
+
+        barra.style.width = `${porcentaje}%`;
+    }
+
+    // PREGUNTA
+    preguntaBox.innerHTML = `
+        <h3>${pregunta.pregunta}</h3>
+    `;
+
+    // OPCIONES
+    opcionesBox.innerHTML = "";
+
+    pregunta.opciones.forEach((opcion, indice) => {
+
+        const boton = document.createElement("button");
+
+        boton.className = "opcion-test";
+        boton.type = "button";
+
+        boton.innerHTML = `
+            <span class="numero-opcion">
+                ${String.fromCharCode(65 + indice)}
+            </span>
+
+            <span>
+                ${opcion.texto}
+            </span>
+        `;
+
+        boton.addEventListener("click", () => {
+            seleccionarOpcion(boton, opcion);
+        });
+
+        opcionesBox.appendChild(boton);
+    });
+
+    // BOTÓN SIGUIENTE
+    const siguiente = document.createElement("button");
+
+    siguiente.className = "btn-siguiente";
+    siguiente.type = "button";
+
+    siguiente.textContent =
+        preguntaActual === TEST_VOCACIONAL.length - 1
+            ? "Ver resultado 🎯"
+            : "Siguiente ➜";
+
+    siguiente.addEventListener("click", avanzarPregunta);
+
+    opcionesBox.appendChild(siguiente);
+}
+
+function seleccionarOpcion(boton, opcion) {
+
+    document
+        .querySelectorAll(".opcion-test")
+        .forEach(btn => {
+            btn.classList.remove("seleccionada");
+        });
+
+    boton.classList.add("seleccionada");
+
+    respuestaSeleccionada = opcion;
+}
+
+function avanzarPregunta() {
+
+    if (!respuestaSeleccionada) {
+        alert("Selecciona una opción antes de continuar.");
+        return;
+    }
+
+    APP.puntos[respuestaSeleccionada.perfil]++;
+
+    if (preguntaActual >= TEST_VOCACIONAL.length - 1) {
+        finalizarTest();
+        return;
+    }
+
+    preguntaActual++;
+
+    mostrarPregunta();
+}
+
+function finalizarTest() {
+
+    const resultado = $("resultado");
+
+    if (!resultado) {
+        console.error("NEXARIS: No existe #resultado.");
+        return;
+    }
+
+    // ORDENAR RESULTADOS
+    const perfiles = Object.entries(APP.puntos);
+
+    perfiles.sort((a, b) => b[1] - a[1]);
+
+    const perfilPrincipal = perfiles[0][0];
+
+    const nombresPerfil = {
+        tecnologico: "Tecnológico 💻",
+        creativo: "Creativo 🎨",
+        cientifico: "Científico 🔬",
+        social: "Social 🤝"
+    };
+
+    const descripciones = {
+        tecnologico:
+            "Tienes afinidad por la tecnología, la lógica y la resolución de problemas. Podrías explorar carreras relacionadas con programación, software, ciberseguridad, inteligencia artificial o robótica.",
+
+        creativo:
+            "Tienes afinidad por la creatividad, el diseño y la expresión visual. Podrías explorar carreras relacionadas con diseño gráfico, UX/UI, animación o comunicación.",
+
+        cientifico:
+            "Tienes afinidad por la investigación, el análisis y la búsqueda de conocimiento. Podrías explorar carreras científicas, de salud, ingeniería o investigación.",
+
+        social:
+            "Tienes afinidad por trabajar con personas, comunicar ideas y generar impacto social. Podrías explorar carreras como psicología, derecho, educación, administración o áreas sociales."
+    };
+
+    resultado.innerHTML = `
+        <div class="resultado-card">
+
+            <span class="hero-badge">
+                🎯 RESULTADO NEXARIS
+            </span>
+
+            <h2>
+                Tu perfil es:
+            </h2>
+
+            <h1>
+                ${nombresPerfil[perfilPrincipal]}
+            </h1>
+
+            <p>
+                ${descripciones[perfilPrincipal]}
+            </p>
+
+            <div class="resultado-puntos">
+
+                <div>
+                    💻 Tecnológico:
+                    <strong>${APP.puntos.tecnologico}</strong>
+                </div>
+
+                <div>
+                    🎨 Creativo:
+                    <strong>${APP.puntos.creativo}</strong>
+                </div>
+
+                <div>
+                    🔬 Científico:
+                    <strong>${APP.puntos.cientifico}</strong>
+                </div>
+
+                <div>
+                    🤝 Social:
+                    <strong>${APP.puntos.social}</strong>
+                </div>
+
+            </div>
+
+            <button
+                class="primary"
+                type="button"
+                onclick="mostrar('profesiones')"
+            >
+                🎓 Explorar carreras
+            </button>
+
+        </div>
+    `;
+
+    resultado.style.display = "block";
+
+    const testContainer = $("test-container");
+
+    if (testContainer) {
+        testContainer.style.display = "none";
+    }
+
+    // GUARDAR RESULTADO
+    if (APP.perfil) {
+
+        APP.perfil.testCompletado = true;
+
+        agregarXP(20);
+
+        guardarPerfil();
+
+        actualizarDashboard();
+    }
 }

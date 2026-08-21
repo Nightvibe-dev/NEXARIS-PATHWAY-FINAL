@@ -2034,3 +2034,187 @@ SMART DASHBOARD
     color: #a78bfa;
     font-weight: 600;
 }
+
+/* ======================================================
+   TEST VOCACIONAL NEXARIS
+   ====================================================== */
+
+.test-header {
+    margin-bottom: 25px;
+}
+
+.test-header h2 {
+    font-size: 32px;
+    margin: 15px 0 10px;
+}
+
+.test-header p {
+    max-width: 750px;
+    opacity: 0.75;
+    line-height: 1.6;
+}
+
+.test-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.test-progress {
+    margin-bottom: 30px;
+}
+
+.test-progress span {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    opacity: 0.75;
+}
+
+.test-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#test-progress-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg,
+            #6d5dfc,
+            #00c4cc);
+    transition: width 0.3s ease;
+}
+
+.pregunta-test h2 {
+    font-size: 25px;
+    line-height: 1.4;
+    margin-bottom: 25px;
+}
+
+.opciones-test {
+    display: grid;
+    gap: 14px;
+}
+
+.opcion-test {
+    width: 100%;
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+.opcion-test:hover {
+    transform: translateY(-2px);
+    border-color: #00c4cc;
+    background: rgba(0, 196, 204, 0.08);
+}
+
+.opcion-numero {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(109, 93, 252, 0.2);
+    font-weight: bold;
+}
+
+.resultado-test {
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+.test-result {
+    padding: 35px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.test-result h1 {
+    font-size: 34px;
+    margin: 15px 0 25px;
+}
+
+.perfil-barras {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.recommended-careers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(180px, 1fr));
+    gap: 12px;
+    margin: 20px 0 30px;
+}
+
+.recommended-careers button {
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: inherit;
+    cursor: pointer;
+}
+
+.recommended-careers button:hover {
+    border-color: #00c4cc;
+    transform: translateY(-2px);
+}
+
+.opciones-test {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.opcion-test {
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.opcion-test:hover {
+    transform: translateY(-2px);
+    border-color: #00c4cc;
+}
+
+.opcion-test.seleccionada {
+    border-color: #00c4cc;
+    background: rgba(0, 196, 204, 0.2);
+}
+
+.opcion-test:disabled {
+    cursor: default;
+}
+
+.resultado-test {
+    text-align: center;
+    padding: 30px;
+}
